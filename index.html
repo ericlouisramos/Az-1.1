@@ -1,0 +1,69 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AZ-104 Practice Tests</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .question { margin-bottom: 20px; }
+        .result { font-weight: bold; margin-top: 20px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <h1>AZ-104 Practice Tests: Section 1 - Manage Azure Identities and Governance</h1>
+    <label for="testSelector">Choose a Test:</label>
+    <select id="testSelector" onchange="loadTest(this.value)">
+        <option value="">--Select Test--</option>
+        <option value="1">Test 1</option>
+        <option value="2">Test 2</option>
+        <option value="3">Test 3</option>
+        <option value="4">Test 4</option>
+        <option value="5">Test 5</option>
+    </select>
+
+    <div id="quizContainer"></div>
+    <button id="submitBtn" class="hidden" onclick="submitAnswers()">Submit</button>
+    <div id="resultContainer" class="result hidden"></div>
+
+    <script>
+        const tests = {1: [{'q': 'What is the primary function of Azure Active Directory (Azure AD)?', 'a': ['Manage network infrastructure', 'Monitor Azure resources', 'Authenticate and authorize users', 'Deploy virtual machines'], 'correct': 2}, {'q': 'Which role has the highest level of permissions in an Azure subscription?', 'a': ['Reader', 'Owner', 'Contributor', 'User Access Administrator'], 'correct': 1}, {'q': 'Which PowerShell command creates a new Azure AD group?', 'a': ['New-AzADUser', 'New-AzADGroup', 'Add-AzADGroupMember', 'New-AzGroup'], 'correct': 1}, {'q': 'Which Azure AD role allows management of user accounts and groups?', 'a': ['Global Administrator', 'Billing Administrator', 'Application Administrator', 'Compliance Administrator'], 'correct': 0}, {'q': 'How do you assign a user to a role in Azure AD using the portal?', 'a': ['Azure Monitor > Roles', 'Subscriptions > IAM > Add Role Assignment', 'Azure AD Connect', 'Azure Firewall'], 'correct': 1}, {'q': 'Which option allows you to invite external users to your directory?', 'a': ['Azure AD B2B collaboration', 'Azure DevOps', 'Azure Resource Manager', 'Azure AD Connect'], 'correct': 0}, {'q': 'Which Azure service enables device identity management?', 'a': ['Azure Key Vault', 'Azure AD Join', 'Azure Monitor', 'Azure SQL'], 'correct': 1}, {'q': 'What is the default domain name assigned to a new Azure AD tenant?', 'a': ['<tenant>.onazure.com', '<tenant>.azuread.net', '<tenant>.onmicrosoft.com', '<tenant>.ad.com'], 'correct': 2}, {'q': 'Which setting is required to enable self-service password reset?', 'a': ['Enable MFA', 'User writeback', 'Password reset policy', 'Authentication methods'], 'correct': 3}, {'q': 'Which Azure AD license is needed for Conditional Access policies?', 'a': ['Free', 'Basic', 'Premium P1', 'Premium P2'], 'correct': 2}, {'q': 'What is the scope of a role assignment in RBAC?', 'a': ['Tenant only', 'Subscription only', 'Resource group, resource, or subscription', 'Resource only'], 'correct': 2}, {'q': 'Which RBAC role can create and manage all types of Azure resources?', 'a': ['Reader', 'Contributor', 'Owner', 'Service Admin'], 'correct': 2}, {'q': 'To grant temporary privileged access to users, which service is used?', 'a': ['Azure AD B2C', 'Azure Lighthouse', 'Privileged Identity Management (PIM)', 'Azure Policy'], 'correct': 2}, {'q': 'How can you restrict access to resources by location?', 'a': ['RBAC', 'Conditional Access', 'Azure Policy', 'Management Groups'], 'correct': 2}, {'q': 'Which object is used to group multiple Azure subscriptions?', 'a': ['Resource groups', 'Management groups', 'Application groups', 'Azure Blueprints'], 'correct': 1}, {'q': 'Which feature enables deploying a repeatable set of Azure resources?', 'a': ['Azure Monitor', 'Azure Blueprints', 'Azure Site Recovery', 'Azure Arc'], 'correct': 1}, {'q': 'What is required before assigning a policy definition?', 'a': ['Blueprint', 'Policy Initiative', 'Scope', 'Resource provider registration'], 'correct': 2}, {'q': 'What is an Azure initiative?', 'a': ['A VM management tool', 'A grouping of policy definitions', 'A billing plan', 'A user access level'], 'correct': 1}, {'q': 'Which resource type can be used as a scope for Azure Policy?', 'a': ['Region', 'Management group', 'Storage account', 'Application Insight'], 'correct': 1}, {'q': 'What tool helps visually assign roles to users or groups?', 'a': ['Azure CLI', 'Azure Portal', 'PowerShell', 'ARM Templates'], 'correct': 1}], 2: [{'q': 'What is the maximum number of Azure AD tenants you can create per account?', 'a': ['1', '10', '25', 'Unlimited'], 'correct': 3}, {'q': 'Which service allows identity federation with on-premises AD?', 'a': ['Azure AD Join', 'Azure AD Connect', 'Azure DevOps', 'Azure Bastion'], 'correct': 1}, {'q': 'What is the purpose of Azure AD Connect?', 'a': ['Monitor Azure usage', 'Synchronize on-prem AD with Azure AD', 'Create virtual machines', 'Assign permissions'], 'correct': 1}, {'q': 'Where do you configure Azure AD password protection policies?', 'a': ['Azure Security Center', 'Password reset blade', 'Azure AD > Authentication methods', 'Azure Key Vault'], 'correct': 2}, {'q': 'Which tool provides a graphical interface to manage Azure AD?', 'a': ['PowerShell', 'Azure CLI', 'Azure Portal', 'Command Prompt'], 'correct': 2}, {'q': 'Which account is automatically assigned Global Administrator in Azure AD?', 'a': ['First user created', 'Billing Admin', 'Support user', 'Security Reader'], 'correct': 0}, {'q': 'How do you prevent accidental deletion of Azure AD groups?', 'a': ['Enable MFA', 'Apply a delete lock', 'Set group expiration', 'Audit logs'], 'correct': 1}, {'q': 'Which portal blade is used to manage Azure roles?', 'a': ['Access control (IAM)', 'Subscriptions', 'Resource Groups', 'Security Center'], 'correct': 0}, {'q': 'Which RBAC role allows managing access only to VMs?', 'a': ['Virtual Machine Operator', 'Contributor', 'Owner', 'Reader'], 'correct': 0}, {'q': 'What can you scope a policy assignment to?', 'a': ['Only tenants', 'Management groups, subscriptions, or resource groups', 'Regions only', 'VMs only'], 'correct': 1}, {'q': 'Azure Policy can help enforce which of the following?', 'a': ['VM sizes', 'Billing reports', 'Traffic analysis', 'Support plans'], 'correct': 0}, {'q': 'Where do you assign Azure Blueprints?', 'a': ['Resource', 'Management group or subscription', 'Virtual Network', 'User Group'], 'correct': 1}, {'q': 'What component defines a set of role and policy assignments in Azure?', 'a': ['Blueprint', 'Policy Initiative', 'Security Center', 'NSG'], 'correct': 0}, {'q': 'How is inheritance used in management groups?', 'a': ['To define pricing', 'To enforce policies and RBAC downward', 'To control billing', 'To manage disks'], 'correct': 1}, {'q': 'Azure AD Identity Protection requires which license?', 'a': ['Free', 'P1', 'P2', 'Basic'], 'correct': 2}, {'q': 'Which role has permission to manage user access but not create resources?', 'a': ['Reader', 'User Access Administrator', 'Contributor', 'Owner'], 'correct': 1}, {'q': 'What command-line tool is used to assign RBAC roles in Azure?', 'a': ['Azure CLI', 'Git Bash', 'CMD', 'Terminal'], 'correct': 0}, {'q': 'Which method is used for just-in-time admin access?', 'a': ['RBAC', 'Azure Policy', 'PIM', 'Blueprints'], 'correct': 2}, {'q': 'What is needed to publish a custom role?', 'a': ['Owner role', 'Policy assignment', 'Management group', 'ARM template'], 'correct': 0}, {'q': 'How can you enforce MFA for certain users?', 'a': ['RBAC', 'Blueprints', 'Conditional Access', 'Cost Management'], 'correct': 2}], 3: [], 4: [], 5: []};
+
+        function loadTest(testNumber) {
+            const container = document.getElementById("quizContainer");
+            const submitBtn = document.getElementById("submitBtn");
+            const resultContainer = document.getElementById("resultContainer");
+            resultContainer.classList.add("hidden");
+            resultContainer.innerHTML = "";
+            container.innerHTML = "";
+            if (!tests[testNumber]) return;
+            tests[testNumber].forEach((q, i) => {
+                const div = document.createElement("div");
+                div.className = "question";
+                div.innerHTML = `<p><strong>Q${i + 1}:</strong> ${q.q}</p>` +
+                    q.a.map((option, j) => `
+                        <label><input type="radio" name="q${i}" value="${j}"> ${String.fromCharCode(65 + j)}. ${option}</label><br>
+                    `).join("");
+                container.appendChild(div);
+            });
+            submitBtn.classList.remove("hidden");
+        }
+
+        function submitAnswers() {
+            const testNumber = document.getElementById("testSelector").value;
+            const quiz = tests[testNumber];
+            let correct = 0;
+            quiz.forEach((q, i) => {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                if (selected && parseInt(selected.value) === q.correct) correct++;
+            });
+            const score = (correct / quiz.length) * 100;
+            const resultContainer = document.getElementById("resultContainer");
+            resultContainer.classList.remove("hidden");
+            resultContainer.innerHTML = `You scored ${score.toFixed(2)}%.<br><br><strong>Correct Answers:</strong><br>` +
+                quiz.map((q, i) => `Q${i + 1}: ${String.fromCharCode(65 + q.correct)}`).join("<br>");
+        }
+    </script>
+</body>
+</html>
